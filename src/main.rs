@@ -1,27 +1,28 @@
+#[macro_use]
+extern crate lazy_static;
+#[macro_use]
+extern crate error_chain;
+extern crate chrono;
 extern crate json;
+extern crate reqwest;
 use json::*;
-
-fn main() {
-    let j = include_str!("../events.json");
-    let m = json::parse(j).unwrap();
-    let m = match m {
-        JsonValue::Array(arr) => {
-            arr.into_iter()
-                .filter(|x| x["type"] == "PushEvent")
-                .collect()
-        }
-        _ => vec![],
-    };
-    let email = "yebenmy@protonmail.com";
-
-    for x in m {
-        println!("{}", x["created_at"]);
-        if let JsonValue::Array(ref commits) = x["payload"]["commits"] {
-            println!("{}",
-                     commits
-                         .iter()
-                         .filter(|commit| commit["author"]["email"] == email)
-                         .count());
+use chrono::prelude::*;
+mod user;
+mod errors {
+    error_chain!{
+        foreign_links {
+            IO(::std::io::Error);
+            Net(::reqwest::Error);
+            Json(::json::Error);
+            Chrono(::chrono::ParseError);
         }
     }
+}
+
+fn main() {
+    let username = "bennyyip";
+    let email = "yebenmy@protonmail.com";
+
+    let ben = user::User::new(username, email, 8, true);
+    println!("{}", ben.today_has_push().unwrap());
 }
