@@ -1,0 +1,13 @@
+[package]
+name = "github-green-bot"
+version = "0.1.0"
+authors = ["BennyYip <yebenmy@protonmail.com>"]
+
+[dependencies]
+telebot = {path = "./telebot"}
+reqwest = "*"
+rand = "*"
+error-chain = "*"
+futures = "*"
+tokio-core = "*"
+json = "*"
